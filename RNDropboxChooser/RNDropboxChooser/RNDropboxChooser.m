@@ -18,13 +18,24 @@
   return dispatch_get_main_queue();
 }
 
+- (UIViewController*)topmost {
+    UIViewController *root = [UIApplication sharedApplication].keyWindow.rootViewController;
+    if (root.presentingViewController)
+        return root.presentingViewController;
+    
+    if (root.presentedViewController)
+        return root.presentedViewController;
+    
+    return root;
+}
+
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(openChooser:(NSString*)linkType callback:(RCTResponseSenderBlock)callback)
 {
   
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIViewController *controller = [[[[UIApplication sharedApplication] windows] firstObject] rootViewController];
+    UIViewController *controller = [self topmost];
     
     DBChooserLinkType DBlinkType = [linkType isEqualToString:@"DBChooserLinkTypeDirect"] ? DBChooserLinkTypeDirect : DBChooserLinkTypePreview;
     
